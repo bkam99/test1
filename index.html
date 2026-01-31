@@ -500,14 +500,17 @@
                                                 <p className="text-sm text-white/70">Annual Fee: ${card.annualFee}</p>
                                             </div>
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-3">
                                             <div className="flex items-center justify-between text-white/90">
-                                                <span className="text-sm">Used:</span>
-                                                <span className="text-lg font-semibold">${dollarUsed}</span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-white/90">
-                                                <span className="text-sm">Available:</span>
-                                                <span className="text-lg font-semibold">${dollarAvailable}</span>
+                                                <div className="flex-1">
+                                                    <span className="text-sm">Used: </span>
+                                                    <span className="text-lg font-semibold">${dollarUsed}</span>
+                                                </div>
+                                                <div className="w-px h-8 bg-white/20 mx-3"></div>
+                                                <div className="flex-1 text-right">
+                                                    <span className="text-sm">Available: </span>
+                                                    <span className="text-lg font-semibold">${dollarAvailable}</span>
+                                                </div>
                                             </div>
                                             <div className="flex items-center justify-between pt-2 border-t border-white/20">
                                                 <span className="text-sm text-white/80">{benefitsAvailable} {benefitsAvailable === 1 ? 'Benefit' : 'Benefits'} Available</span>
@@ -752,8 +755,7 @@
                                                 <div className="flex-1">
                                                     <h4 className="text-white font-medium mb-1">{benefit.name}</h4>
                                                     <p className="text-sm text-gray-400 mb-2">
-                                                        {benefit.interval.charAt(0).toUpperCase() + benefit.interval.slice(1)} · 
-                                                        {benefit.type === 'dollar-cap' ? ` $${benefit.dollarCap} cap` : ' One-time use'}
+                                                        {benefit.interval.charAt(0).toUpperCase() + benefit.interval.slice(1)}
                                                     </p>
                                                     {usage && (
                                                         <p className="text-xs text-gray-500">
