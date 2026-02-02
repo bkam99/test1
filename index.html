@@ -37,6 +37,10 @@
             overflow: hidden;
         }
 
+        .card-container {
+            position: relative;
+        }
+
         .card-shimmer::before {
             content: '';
             position: absolute;
@@ -662,13 +666,18 @@
                     <CardDetailView 
                         card={selectedCard}
                         benefits={benefits.filter(b => b.cardId === selectedCard.id)}
+                        allBenefits={benefits}
                         usages={usages}
                         onBack={() => {
                             setCurrentView('home');
                             setSelectedCard(null);
                         }}
                         onToggleBenefit={toggleBenefitUsage}
-                        onUpdateBenefits={(newBenefits) => saveData(undefined, newBenefits, undefined)}
+                        onUpdateBenefits={(updatedCardBenefits) => {
+                            // Merge updated card benefits with other cards' benefits
+                            const otherBenefits = benefits.filter(b => b.cardId !== selectedCard.id);
+                            saveData(undefined, [...otherBenefits, ...updatedCardBenefits], undefined);
+                        }}
                         onDeleteCard={deleteCard}
                     />
                 );
@@ -775,23 +784,23 @@
                                 });
 
                                 return (
-                                    <div
-                                        key={card.id}
-                                        className="relative card-shimmer glass-effect rounded-2xl p-6 cursor-pointer transform transition-all hover:scale-[1.02] fade-in-up"
-                                        style={{ 
-                                            background: card.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                            animationDelay: `${idx * 0.1}s`
-                                        }}
-                                        onClick={() => {
-                                            setSelectedCard(card);
-                                            setCurrentView('cardDetail');
-                                        }}
-                                    >
-                                        {urgentCount > 0 && (
-                                            <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-gray-900 shadow-lg">
-                                                {urgentCount}
-                                            </div>
-                                        )}
+                                    <div key={card.id} className="card-container">
+                                        <div
+                                            className="relative card-shimmer glass-effect rounded-2xl p-6 cursor-pointer transform transition-all hover:scale-[1.02] fade-in-up"
+                                            style={{ 
+                                                background: card.color || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                animationDelay: `${idx * 0.1}s`
+                                            }}
+                                            onClick={() => {
+                                                setSelectedCard(card);
+                                                setCurrentView('cardDetail');
+                                            }}
+                                        >
+                                            {urgentCount > 0 && (
+                                                <div className="absolute -top-2 -right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-gray-900 shadow-lg z-10">
+                                                    {urgentCount}
+                                                </div>
+                                            )}
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
                                                 <h3 className="text-xl font-semibold text-white serif mb-1">{card.name}</h3>
@@ -817,6 +826,7 @@
                                                 </svg>
                                             </div>
                                         </div>
+                                    </div>
                                     </div>
                                 );
                             })}
@@ -999,7 +1009,7 @@
             );
         }
 
-        function CardDetailView({ card, benefits, usages, onBack, onToggleBenefit, onUpdateBenefits, onDeleteCard }) {
+        function CardDetailView({ card, benefits, allBenefits, usages, onBack, onToggleBenefit, onUpdateBenefits, onDeleteCard }) {
             const [showAddBenefit, setShowAddBenefit] = useState(false);
             const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
             const [benefitToDelete, setBenefitToDelete] = useState(null);
@@ -1089,6 +1099,9 @@
                                                     <div className="flex items-center gap-2 flex-wrap mb-2">
                                                         <span className="text-sm text-gray-400">
                                                             {benefit.interval.charAt(0).toUpperCase() + benefit.interval.slice(1)}
+                                                            {benefit.type === 'dollar-cap' && benefit.dollarCap && (
+                                                                <span className="text-gray-500"> · ${benefit.dollarCap}</span>
+                                                            )}
                                                         </span>
                                                         {daysLeft > 0 && (
                                                             <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
