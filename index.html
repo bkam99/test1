@@ -567,12 +567,15 @@
             };
 
             const deleteCard = (cardId) => {
+                console.log('deleteCard called with:', cardId);
+                console.log('Current cards:', cards);
                 const newCards = cards.filter(c => c.id !== cardId);
                 const newBenefits = benefits.filter(b => b.cardId !== cardId);
                 const newUsages = usages.filter(u => {
                     const benefit = benefits.find(b => b.id === u.benefitId);
                     return benefit && benefit.cardId !== cardId;
                 });
+                console.log('New cards after delete:', newCards);
                 saveData(newCards, newBenefits, newUsages);
                 setCurrentView('home');
                 setSelectedCard(null);
@@ -874,7 +877,7 @@
             );
         }
 
-        function CardDetailView({ card, benefits, usages, onBack, onToggleBenefit, onUpdateBenefits }) {
+        function CardDetailView({ card, benefits, usages, onBack, onToggleBenefit, onUpdateBenefits, onDeleteCard }) {
             const [showAddBenefit, setShowAddBenefit] = useState(false);
             const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
             const [benefitToDelete, setBenefitToDelete] = useState(null);
@@ -1045,6 +1048,8 @@
                                         </button>
                                         <button
                                             onClick={() => {
+                                                console.log('Delete button clicked, cardId:', card.id);
+                                                console.log('onDeleteCard function:', onDeleteCard);
                                                 onDeleteCard(card.id);
                                                 setShowDeleteConfirm(false);
                                             }}
